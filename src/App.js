@@ -1,15 +1,24 @@
 import * as React from "react";
 import "./normalize.css";
 import "./App.css";
-
-import { getCards } from "./services/cardService";
 import { CardPreview } from "./components/CardPreview";
+import { getCards } from "./services/cardService";
+import { CardForm } from "./components/CardForm";
 
 function App() {
   const [cards, setCards] = React.useState([]);
   React.useEffect(() => {
     getCards().then(setCards);
   }, []);
+
+  function handleRemove(id) {
+    setCards((existing) => existing.filter((c) => c.id !== id));
+  }
+
+  function handleAdd(card) {
+    setCards((existing) => [...existing, card]);
+  }
+
   return (
     <div>
       <div>
@@ -22,8 +31,15 @@ function App() {
         <main>
           <h3>Your Cards</h3>
           <div className="gridContainer">
+            <CardForm onSave={handleAdd} />
             {cards.map(({ id, definition, term }) => (
-              <CardPreview key={id} definition={definition} term={term} />
+              <CardPreview
+                key={id}
+                id={id}
+                onRemove={handleRemove}
+                definition={definition}
+                term={term}
+              />
             ))}
           </div>
         </main>
